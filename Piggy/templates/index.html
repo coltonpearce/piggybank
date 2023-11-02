@@ -1,54 +1,107 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Piggy Bank</title>
+    <title>Piggy Bank Savings</title>
     <style>
-      .piggy {
-          height: 300px;
-          width: 200px;
-          border: 1px solid black;
-          position: relative;
+      body {
+        font-family: "Arial", sans-serif;
+        background-color: #f0f0f0;
+        text-align: center;
+        padding-top: 50px;
       }
-      .fill {
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          background-color: green;
-          width: 100%;
-          height: {{ percentage_filled }}%;
+      input,
+      button {
+        font-size: 1.2em;
+        padding: 10px;
+        margin: 5px;
+      }
+      .goal,
+      .current,
+      .celebration {
+        font-size: 1.5em;
+        margin: 20px;
+      }
+      .goal {
+        font-weight: bold;
+      }
+      .celebration {
+        display: none;
+        color: green;
+      }
+      .progress-container {
+        width: 300px;
+        background-color: #ddd;
+        margin: 20px auto;
+        height: 30px;
+        border-radius: 15px;
+      }
+      .progress-bar {
+        height: 30px;
+        background-color: #76a5af;
+        width: 0%;
+        border-radius: 15px;
+        transition: width 0.5s ease;
       }
     </style>
   </head>
   <body>
-    <h2>Piggy Bank Savings Goal</h2>
-    <form action="/set_goal" method="post">
-      Set Goal: $<input
-        type="text"
-        name="goal"
-        placeholder="Enter savings goal"
-      />
-      <input type="submit" value="Set Goal" />
-    </form>
-    <br />
-    <div class="piggy">
-      <div class="fill"></div>
+    <h1>Welcome to Piggy Bank Savings!</h1>
+    <div class="goal">
+      <form action="/set_goal" method="post">
+        Set your savings goal: $<input
+          type="number"
+          name="goal"
+          placeholder="Enter goal"
+          min="0"
+          required
+        />
+        <button type="submit">Set Goal</button>
+      </form>
     </div>
-    <br />
-    <form action="/add_money" method="post">
-      Add Money: $<input type="text" name="amount" placeholder="Enter amount" />
-      <input type="submit" value="Add" />
-    </form>
-    <form action="/remove_money" method="post">
-      Remove Money: $<input
-        type="text"
-        name="amount"
-        placeholder="Enter amount"
-      />
-      <input type="submit" value="Remove" />
-    </form>
-    <br />
-    Current Savings: ${{ savings.current }}
-    <br />
-    Goal: ${{ savings.goal }}
+    <div class="goal">Goal: ${{ '%.2f' % savings.goal }}</div>
+    <div class="progress-container">
+      <div
+        class="progress-bar"
+        id="progress-bar"
+        style="width:{{ percentage_filled }}%"
+      ></div>
+    </div>
+    <div class="current">Current Savings: ${{ '%.2f' % savings.current }}</div>
+    <div>
+      <form action="/add_money" method="post">
+        <input
+          type="number"
+          name="amount"
+          placeholder="Enter amount"
+          min="0"
+          required
+        />
+        <button type="submit">Add Money</button>
+      </form>
+      <form action="/remove_money" method="post">
+        <input
+          type="number"
+          name="amount"
+          placeholder="Enter amount"
+          min="0"
+          required
+        />
+        <button type="submit">Remove Money</button>
+      </form>
+    </div>
+
+    <div class="celebration" id="celebration">
+      <h2>Congratulations! Goal Achieved! 🎉</h2>
+    </div>
+
+    <script>
+      // Check if the goal is met and show celebration
+      window.onload = function() {
+          var goalMet = {{ 'true' if goal_met else 'false' }};
+          if (goalMet) {
+              document.getElementById('celebration').style.display = 'block';
+          }
+      };
+    </script>
   </body>
 </html>

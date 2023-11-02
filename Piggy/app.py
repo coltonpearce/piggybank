@@ -8,12 +8,14 @@ savings = {
     "current": 0.0
 }
 
+
 @app.route('/')
 def index():
-    percentage_filled = 0
-    if savings["goal"] > 0:
-        percentage_filled = (savings["current"] / savings["goal"]) * 100
-    return render_template('index.html', savings=savings, percentage_filled=percentage_filled)
+    goal_met = savings["current"] >= savings["goal"] and savings["goal"] > 0
+    percentage_filled = (
+        savings["current"] / savings["goal"]) * 100 if savings["goal"] else 0
+    return render_template('index.html', savings=savings, percentage_filled=percentage_filled, goal_met=goal_met)
+
 
 @app.route('/set_goal', methods=['POST'])
 def set_goal():
@@ -24,6 +26,7 @@ def set_goal():
     except ValueError:
         pass
     return redirect(url_for('index'))
+
 
 @app.route('/add_money', methods=['POST'])
 def add_money():
@@ -36,6 +39,7 @@ def add_money():
         pass
     return redirect(url_for('index'))
 
+
 @app.route('/remove_money', methods=['POST'])
 def remove_money():
     try:
@@ -46,6 +50,7 @@ def remove_money():
     except ValueError:
         pass
     return redirect(url_for('index'))
+
 
 if __name__ == '__main__':
     app.run(debug=True)
